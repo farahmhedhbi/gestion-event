@@ -19,6 +19,7 @@ public class Event {
     @JoinColumn(name = "organizer_id")
     private Organizer organizer;
 
+
     @ManyToMany
     @JoinTable(
             name = "event_participants",

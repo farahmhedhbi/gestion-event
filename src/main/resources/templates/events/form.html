@@ -17,7 +17,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             background-color: white;
         }
 
@@ -25,6 +25,12 @@
             text-align: center;
             margin-bottom: 20px;
             color: #2d3436;
+        }
+
+        .participants-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
         }
     </style>
 </head>
@@ -70,7 +76,22 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Mettre à jour</button>
+        <div class="participants-section" th:if="${event.id != null}">
+            <h5>Participants</h5>
+            <div th:if="${event.participants.empty}">
+                <p class="text-muted">Aucun participant pour cet événement</p>
+            </div>
+            <ul th:unless="${event.participants.empty}">
+                <li th:each="participant : ${event.participants}"
+                    th:text="${participant.fullName} + ' (' + ${participant.email} + ')'"></li>
+            </ul>
+            <a th:href="@{'/events/' + ${event.id} + '/participants'}"
+               class="btn btn-outline-primary btn-sm mt-2">
+                Gérer les participants
+            </a>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-3">Mettre à jour</button>
     </form>
 </div>
 </body>

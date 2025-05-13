@@ -1,10 +1,13 @@
 package com.example.gestion_event.controllers;
 
+import com.example.gestion_event.entities.Event;
 import com.example.gestion_event.entities.Participant;
+import com.example.gestion_event.services.EventService;
 import com.example.gestion_event.services.ParticipantService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -13,15 +16,17 @@ import java.util.List;
 public class ParticipantController {
 
     private final ParticipantService participantService;
+    private final EventService eventService;
 
-    public ParticipantController(ParticipantService participantService) {
+    public ParticipantController(ParticipantService participantService,
+                                 EventService eventService) {
         this.participantService = participantService;
+        this.eventService = eventService;
     }
 
     @GetMapping
     public String listParticipants(Model model) {
-        List<Participant> participants = participantService.getAllParticipants();
-        model.addAttribute("participants", participants);
+        model.addAttribute("participants", participantService.getAllParticipants());
         return "participants/list";
     }
 
@@ -39,8 +44,7 @@ public class ParticipantController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Participant participant = participantService.getParticipantById(id);
-        model.addAttribute("participant", participant);
+        model.addAttribute("participant", participantService.getParticipantById(id));
         return "participants/form";
     }
 
@@ -53,8 +57,7 @@ public class ParticipantController {
 
     @GetMapping("/{id}")
     public String viewParticipant(@PathVariable Long id, Model model) {
-        Participant participant = participantService.getParticipantById(id);
-        model.addAttribute("participant", participant);
+        model.addAttribute("participant", participantService.getParticipantById(id));
         return "participants/view";
     }
 
@@ -62,5 +65,41 @@ public class ParticipantController {
     public String deleteParticipant(@PathVariable Long id) {
         participantService.deleteParticipant(id);
         return "redirect:/participants";
+    }
+
+    @GetMapping("/{id}/events")
+    public String viewParticipantEvents(@PathVariable Long id, Model model) {
+        Participant participant = participantService.getParticipantById(id);
+        List<Event> allEvents = eventService.getAllEvents();
+
+        model.addAttribute("participant", participant);
+        model.addAttribute("allEvents", allEvents);
+        return "participants/manage-events";
+    }
+
+    @PostMapping("/{participantId}/events/add")
+    public String addEventToParticipant(@PathVariable Long participantId,
+                                        @RequestParam Long eventId,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            participantService.addEventToParticipant(participantId, eventId);
+            redirectAttributes.addFlashAttribute("success", "Événement ajouté avec succès");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de l'ajout: " + e.getMessage());
+        }
+        return "redirect:/participants/" + participantId + "/events";
+    }
+
+    @PostMapping("/{participantId}/events/remove")
+    public String removeEventFromParticipant(@PathVariable Long participantId,
+                                             @RequestParam Long eventId,
+                                             RedirectAttributes redirectAttributes) {
+        try {
+            participantService.removeEventFromParticipant(participantId, eventId);
+            redirectAttributes.addFlashAttribute("success", "Événement retiré avec succès");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors du retrait: " + e.getMessage());
+        }
+        return "redirect:/participants/" + participantId + "/events";
     }
 }

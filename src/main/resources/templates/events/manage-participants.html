@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Gérer les participants</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      background-color: #343a40;
+      color: white;
+      border-radius: 10px 10px 0 0 !important;
+    }
+
+    .participant-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .participant-item:last-child {
+      border-bottom: none;
+    }
+
+    .participant-info {
+      flex-grow: 1;
+    }
+
+    .participant-email {
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+
+    .add-participant-form {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="container">
+<div class="header">
+  <h1>Gérer les participants: <span th:text="${event.title}"></span></h1>
+  <a th:href="@{'/events/' + ${event.id}}" class="btn btn-outline-secondary">Retour à l'événement</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Participants inscrits (<span th:text="${event.participants.size()}"></span>)</h5>
+  </div>
+  <div class="card-body p-0">
+    <div th:if="${event.participants.empty}">
+      <p class="text-muted p-3">Aucun participant inscrit</p>
+    </div>
+    <div th:unless="${event.participants.empty}">
+      <div th:each="participant : ${event.participants}" class="participant-item">
+        <div class="participant-info">
+          <div th:text="${participant.fullName}"></div>
+          <div class="participant-email" th:text="${participant.email}"></div>
+        </div>
+        <form th:action="@{'/events/' + ${event.id} + '/participants/remove'}" method="post">
+          <input type="hidden" name="participantId" th:value="${participant.id}">
+          <button type="submit" class="btn btn-outline-danger btn-sm">Retirer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="add-participant-form">
+  <h5>Ajouter un participant</h5>
+  <form th:action="@{'/events/' + ${event.id} + '/participants/add'}" method="post">
+    <div class="mb-3">
+      <select name="participantId" class="form-select" required>
+        <option value="">-- Sélectionnez un participant --</option>
+        <option th:each="participant : ${allParticipants}"
+                th:value="${participant.id}"
+                th:text="${participant.fullName} + ' (' + ${participant.email} + ')'"
+                th:disabled="${event.participants.contains(participant)}">
+        </option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+  </form>
+</div>
+</body>
+</html>

@@ -9,7 +9,7 @@
         }
 
         .card {
-            max-width: 600px;
+            max-width: 700px;
             margin: 50px auto;
             padding: 30px;
             border-radius: 12px;
@@ -27,6 +27,31 @@
             text-align: center;
             margin-top: 30px;
         }
+
+        .participants-list {
+            margin-top: 20px;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .participant-info {
+            flex-grow: 1;
+        }
+
+        .participant-email {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .manage-participants {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +65,30 @@
               th:text="${event.organizer.name} + ' (' + ${event.organizer.email} + ')'"></span>
         <span th:unless="${event.organizer != null}">Non spécifié</span>
     </p>
+
+    <div class="participants-list">
+        <h5>Participants (<span th:text="${event.participants.size()}"></span>)</h5>
+
+        <div th:if="${event.participants.empty}">
+            <p class="text-muted">Aucun participant inscrit à cet événement</p>
+        </div>
+
+        <div th:unless="${event.participants.empty}">
+            <div th:each="participant : ${event.participants}" class="participant-item">
+                <div class="participant-info">
+                    <div th:text="${participant.fullName}"></div>
+                    <div class="participant-email" th:text="${participant.email}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="manage-participants">
+            <a th:href="@{'/events/' + ${event.id} + '/participants'}"
+               class="btn btn-primary">
+                Gérer les participants
+            </a>
+        </div>
+    </div>
 
     <div class="btn-back">
         <a th:href="@{/events}" class="btn btn-outline-secondary">⬅ Retour à la liste</a>
