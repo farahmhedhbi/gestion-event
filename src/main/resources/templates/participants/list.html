@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liste des participants</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f2f4f8;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .add-btn {
+            display: block;
+            text-align: center;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        a.action-link {
+            margin-right: 10px;
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        a.action-link:hover {
+            text-decoration: underline;
+        }
+
+        .actions {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Liste des participants</h1>
+
+<a class="add-btn" th:href="@{/participants/new}">+ Ajouter un participant</a>
+
+<table>
+    <tr>
+        <th>Nom complet</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="participant : ${participants}">
+        <td th:text="${participant.fullName}"></td>
+        <td th:text="${participant.email}"></td>
+        <td class="actions">
+            <a class="action-link" th:href="@{'/participants/' + ${participant.id}}">Voir</a>
+            <a class="action-link" th:href="@{'/participants/edit/' + ${participant.id}}">Modifier</a>
+            <a class="action-link" th:href="@{'/participants/delete/' + ${participant.id}}">Supprimer</a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
